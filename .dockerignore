@@ -1,0 +1,12 @@
+.venv
+.env
+.git
+.claude
+**/__pycache__
+data/*.db
+data/*.db-*
+data/datasets
+data/cache
+data/demo_credentials.txt
+tests
+*.docx

@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+data/reserve_juggler.db
+data/reserve_juggler.db-*
+data/datasets/
+data/cache/
+data/demo_credentials.txt

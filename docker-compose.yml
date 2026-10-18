@@ -1,0 +1,25 @@
+# docker compose up -d   →   http://localhost:8000
+# Put this behind an HTTPS reverse proxy for anything beyond a laptop, then set RJ_SECURE_COOKIES=1
+# and RJ_TRUSTED_PROXIES to the proxy's address.
+services:
+  reserve-juggler:
+    build: .
+    image: reserve-juggler:latest
+    ports:
+      - "8000:8000"
+    environment:
+      RJ_PUBLIC_DEMO: "0"          # landing page shows no live numbers without sign-in
+      RJ_DEMO_TOOLS: "0"           # hide the audit tamper-test button
+      RJ_SECURE_COOKIES: "0"       # 1 once served over HTTPS
+      RJ_SESSION_HOURS: "12"
+      RJ_RETRAIN_EVERY_HOURS: "24"
+      RJ_LOG_LEVEL: "INFO"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - rj-data:/data
+    restart: unless-stopped
+
+volumes:
+  rj-data:
