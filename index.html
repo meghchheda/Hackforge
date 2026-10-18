@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reserve Juggler AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=15">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="boot" id="boot" role="status" aria-live="polite" aria-label="Loading Reserve Juggler AI">
+    <div class="boot-rain" id="bootRain" aria-hidden="true"></div>
+    <div class="boot-card">
+      <div class="logo">RESERVE JUGGLER <small>AI</small></div>
+      <div class="boot-bar" aria-hidden="true"><span></span></div>
+      <p id="bootMsg">Loading treasury data…</p>
+    </div>
+  </div>
+  <div class="app">
+    <aside class="side">
+      <div class="brand">
+        <a class="name" href="/" title="Back to the landing page" style="text-decoration:none;color:#000"><span>RESERVE<br>JUGGLER</span><span style="font: 800 10px var(--mono); background: #000; color: #fff; padding: 2px 5px; align-self: flex-start">v2.0</span></a>
+        <div class="tag">Smart cash. Higher yield.<br>No payout left behind.</div>
+      </div>
+      <nav class="nav" id="nav" aria-label="Screens"></nav>
+      <div class="side-foot">
+        <div class="side-motto">KEEP PAYOUTS SAFE.<br>PUT THE REST TO WORK.</div>
+        <div class="when" id="asof">
+          <input type="date" id="asofDate" aria-label="As-of date">
+          <select id="asofHour" aria-label="As-of hour" style="width: 92px"></select>
+        </div>
+        <button class="copilot" id="fab" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>
+          Ask assistant
+        </button>
+        <div class="who" id="who" aria-label="Signed-in user"></div>
+        <div class="legend"><span><span class="badge b-o">O</span> observed</span><span><span class="badge b-m">M</span> modeled</span><span><span class="badge b-a">A</span> assumed</span></div>
+        <div class="sim" id="simTag">DECISION SUPPORT · NO MONEY MOVES</div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="pagehead">
+        <h1 id="title">Reserve Juggler</h1>
+        <div class="engine" id="engine"><span class="dot"></span><div><b id="engineTitle">Engine active</b><small id="engineSub">Simulation</small></div></div>
+      </header>
+      <div id="page"><div class="loading"><span class="spin"></span>Loading models…</div></div>
+    </main>
+  </div>
+
+  <aside class="drawer" id="drawer" aria-label="Treasury assistant">
+    <header><span>Treasury assistant</span><button class="btn sm" id="closeDrawer" type="button">Close</button></header>
+    <div class="msgs" id="msgs"></div>
+    <form id="askForm"><input id="askInput" placeholder="Ask about cash, sweeps, shocks, results…" autocomplete="off" aria-label="Question"><button class="btn primary" style="padding: 10px 16px">Ask</button></form>
+  </aside>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js?v=18"></script>
+</body>
+</html>
