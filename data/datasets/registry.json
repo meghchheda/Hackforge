@@ -1,0 +1,17 @@
+{
+ "datasets": [
+  {
+   "id": "demo",
+   "name": "Demo \u00b7 treasury_4tier_dataset.csv (2026)",
+   "file": "C:\\Users\\HP\\Downloads\\ReserveJugglerAI\\data\\treasury_4tier_dataset.csv",
+   "rows": null,
+   "readonly": true,
+   "live": false,
+   "created_by": "system",
+   "created_at": "2026-10-18T04:19:33Z",
+   "assumed": [],
+   "notes": [],
+   "source": "treasury_4tier_dataset.csv"
+  }
+ ]
+}

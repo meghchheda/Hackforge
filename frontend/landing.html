@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reserve Juggler AI · Treasury simulator</title>
+  <meta name="description" content="Reserve Juggler decides every hour how much cash to keep for payouts and where the rest can earn, using forecasts, stress tests and the cheapest funding.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=15">
+  <style>
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .topnav { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 4px solid #000; }
+    .topnav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+    .logo { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); border: 3px solid #000; box-shadow: 3px 3px 0 #000; padding: 6px 12px; font: 700 18px/1 var(--display); text-decoration: none; color: #000; }
+    .logo small { font: 800 10px var(--mono); background: #000; color: #fff; padding: 2px 5px; }
+    .links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .links a { font: 700 13px var(--display); text-transform: uppercase; text-decoration: none; color: #000; border-bottom: 3px solid transparent; }
+    .links a:hover { border-bottom-color: var(--accent); }
+
+    section.block { padding: 72px 0; }
+    .kicker { display: inline-block; font: 800 11px var(--mono); text-transform: uppercase; letter-spacing: 0.06em; background: #fff; border: 2px solid #000; box-shadow: 2px 2px 0 #000; padding: 4px 9px; }
+    .h-xl { font: 700 clamp(40px, 6vw, 76px)/0.98 var(--display); letter-spacing: -0.04em; text-transform: uppercase; margin: 18px 0 18px; }
+    .h-xl mark { background: var(--accent); padding: 0 8px; border: 3px solid #000; box-shadow: 5px 5px 0 #000; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .h-lg { font: 700 clamp(28px, 3.6vw, 42px)/1.05 var(--display); letter-spacing: -0.03em; text-transform: uppercase; margin: 14px 0 12px; }
+    .sub { font-size: 18px; max-width: 560px; margin: 0; }
+
+    .landhero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr); gap: 48px; align-items: center; padding: 72px 0 56px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+    .cta .btn { font-size: 14px; padding: 13px 20px; }
+    .btn.lav { background: var(--data2-fill); }
+    .live { background: var(--accent); border: 4px solid #000; box-shadow: 10px 10px 0 #000; padding: 22px; }
+    .live .row1 { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .live h3 { font: 700 26px/1.15 var(--display); text-transform: uppercase; margin: 14px 0 6px; }
+    .live .duo { margin-top: 16px; }
+    .live .foot { margin-top: 14px; font: 700 11px var(--mono); }
+    .blink { width: 9px; height: 9px; background: #000; display: inline-block; animation: bl 1.2s steps(2) infinite; }
+    @keyframes bl { 50% { opacity: 0; } }
+
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+    .stat { background: #fff; border: 3px solid #000; box-shadow: 6px 6px 0 #000; padding: 18px; }
+    .stat .v { font: 800 34px var(--mono); letter-spacing: -0.03em; }
+    .stat .k { font: 700 13px var(--display); text-transform: uppercase; margin-top: 4px; }
+    .stat .d { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 28px; }
+    .step { background: #fff; border: 3px solid #000; box-shadow: 6px 6px 0 #000; padding: 20px; position: relative; }
+    .step .n { position: absolute; top: -18px; left: 16px; width: 36px; height: 36px; display: grid; place-items: center; background: #000; color: var(--accent); font: 800 15px var(--mono); }
+    .step h4 { font: 700 18px var(--display); text-transform: uppercase; margin: 12px 0 8px; }
+    .step p { margin: 0; font-size: 14.5px; }
+
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+    .insight { background: var(--sky); border: 4px solid #000; box-shadow: 10px 10px 0 #000; padding: 24px; }
+    .insight table td, .insight table th { padding: 10px 12px; }
+
+    .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 28px; }
+    .feature { display: block; background: #fff; border: 3px solid #000; box-shadow: 6px 6px 0 #000; padding: 18px 20px; text-decoration: none; color: #000; transition: transform 100ms, box-shadow 100ms; }
+    .feature:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 #000; background: #FFFBE0; }
+    .feature .tag { font: 800 11px var(--mono); }
+    .feature h4 { font: 700 18px var(--display); text-transform: uppercase; margin: 8px 0 6px; }
+    .feature p { margin: 0; font-size: 14px; }
+
+    .try { background: #fff; border: 4px solid #000; box-shadow: 10px 10px 0 #000; }
+    .try .bar { background: var(--data2-fill); border-bottom: 3px solid #000; padding: 12px 18px; display: flex; justify-content: space-between; font: 700 14px var(--display); text-transform: uppercase; }
+    .try form { display: flex; gap: 10px; padding: 18px; border-bottom: 3px solid #000; }
+    .try input { flex: 1; min-width: 0; border: 2px solid #000; padding: 12px; font: 500 15px "DM Sans", sans-serif; }
+    .try .answer { padding: 18px; min-height: 160px; font-size: 15px; }
+    .try .chipsrow { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 18px; }
+    .try .chipsrow button { border: 2px solid #000; box-shadow: 2px 2px 0 #000; background: #fff; padding: 6px 10px; font: 500 13px "DM Sans", sans-serif; cursor: pointer; }
+    .try .chipsrow button:hover { background: #FEF9C3; }
+
+    .honest { background: #000; color: #fff; border: 4px solid #000; box-shadow: 10px 10px 0 var(--accent); padding: 26px 28px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: center; }
+    .honest p { margin: 0; max-width: 760px; font-size: 16px; }
+    .honest a { color: var(--accent); font: 700 14px var(--display); text-transform: uppercase; }
+    footer { border-top: 4px solid #000; background: #fff; margin-top: 72px; }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 20px; padding-bottom: 20px; font: 700 12px var(--mono); }
+    footer a { color: #000; }
+
+    @media (max-width: 960px) {
+      .landhero, .split { grid-template-columns: 1fr; gap: 36px; }
+      .stats, .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .steps { row-gap: 36px; }
+    }
+    @media (max-width: 600px) {
+      .links { display: none; }
+      .stats, .steps, .features { grid-template-columns: 1fr; }
+      section.block { padding: 52px 0; }
+      .try form { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main">
+    <div class="wrap">
+      <a class="logo" href="/">RESERVE JUGGLER <small>v2.0</small></a>
+      <div class="links">
+        <a href="#how">How it works</a>
+        <a href="#insight">The insight</a>
+        <a href="#features">Features</a>
+        <a href="#assistant">Assistant</a>
+      </div>
+      <a class="btn primary" href="/app#/overview">Open dashboard →</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="landhero">
+      <div>
+        <span class="kicker">Treasury engine · demo data or your own, live</span>
+        <h1 class="h-xl">Keep payouts safe. <mark>Put the rest</mark> to work.</h1>
+        <p class="sub">Every hour, Reserve Juggler forecasts deposits and withdrawals, sizes a reserve from outflow risk, finds the cheapest way to cover a gap, and sweeps spare cash into overnight repo. Every decision is explained and logged.</p>
+        <div class="cta">
+          <a class="btn primary" href="/app#/overview">Open the dashboard →</a>
+          <a class="btn lav" href="#assistant">Ask the assistant</a>
+          <a class="btn" href="/app#/backtest">See the results</a>
+        </div>
+      </div>
+      <aside class="live" aria-live="polite">
+        <div class="row1"><span class="stamp" style="background:#fff"><span class="blink" style="margin-right:6px"></span>Live from the engine</span><span class="pill p-info" id="lStatus">Loading</span></div>
+        <h3 id="lAction">Reading the ledger…</h3>
+        <div id="lDetail" style="font-weight:500"></div>
+        <div class="duo"><div><div class="k">Cash</div><div class="v" id="lCash">—</div></div><div><div class="k">Required reserve</div><div class="v" id="lReserve">—</div></div></div>
+        <div class="foot" id="lAsOf">SIMULATION ONLY</div>
+      </aside>
+    </section>
+
+    <section aria-label="Results" class="stats" id="stats">
+      <div class="stat"><div class="v" id="sErr">—</div><div class="k">Less forecast error</div><div class="d">vs the same hour yesterday, on held-out months</div></div>
+      <div class="stat"><div class="v" id="sCov">—</div><div class="k">Band coverage</div><div class="d">of hours inside the 95% forecast band</div></div>
+      <div class="stat"><div class="v" id="sGain">—</div><div class="k">More than a fixed reserve</div><div class="d">optimized policy, held-out test window</div></div>
+      <div class="stat"><div class="v" id="sGap">—</div><div class="k">Unfunded payout hours</div><div class="d">for the optimized policy in the replay</div></div>
+    </section>
+
+    <section class="block" id="how">
+      <span class="kicker">How it works</span>
+      <h2 class="h-lg">Four decisions, every hour</h2>
+      <div class="steps">
+        <div class="step"><span class="n">01</span><h4>Forecast</h4><p>Gradient-boosted models predict flows 1, 6 and 24 hours ahead, with conformal bands whose coverage is tested.</p></div>
+        <div class="step"><span class="n">02</span><h4>Size the reserve</h4><p>Block-bootstrap paths keep outflows clustered. The reserve covers the worst stretch at your chosen confidence.</p></div>
+        <div class="step"><span class="n">03</span><h4>Fund cheapest</h4><p>For any gap, the ladder ranks overdraft, repo, bonds and equities by total cost, not habit.</p></div>
+        <div class="step"><span class="n">04</span><h4>Sweep overnight</h4><p>At 17:00 the night-lock sizes the repo sweep so carry beats the risk of the 15-hour lock.</p></div>
+      </div>
+    </section>
+
+    <section class="block split" id="insight" style="padding-top:24px">
+      <div>
+        <span class="kicker">The insight</span>
+        <h2 class="h-lg">Borrowing often beats selling</h2>
+        <p class="sub">The overdraft costs 12% a year, about 0.00137% an hour. Selling costs a one-time haircut. So for any gap shorter than about two weeks, borrowing is cheaper than breaking the repo early, and the asset keeps earning.</p>
+        <div class="cta"><a class="btn" href="/app#/ladder">Try the funding ladder →</a></div>
+      </div>
+      <div class="insight">
+        <div class="formula" style="margin-top:0">h* = haircut ÷ (APR ÷ 8,760)</div>
+        <table>
+          <tr><th>Sell instead</th><th class="r">Haircut</th><th class="r">Borrowing cheaper until</th></tr>
+          <tr><td>Repo, early</td><td class="r num">0.5%</td><td class="r num">365 h · 15 days</td></tr>
+          <tr><td>Bonds</td><td class="r num">2%</td><td class="r num">1,460 h · 61 days</td></tr>
+          <tr><td>Equities</td><td class="r num">15%</td><td class="r num">10,950 h · 15 months</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="features" style="padding-top:24px">
+      <span class="kicker">Ten screens</span>
+      <h2 class="h-lg">Everything a treasury desk asks</h2>
+      <div class="features">
+        <a class="feature" href="/app#/overview"><span class="tag">01 · LIVE</span><h4>Command Center</h4><p>Drag withdrawals, deposits, repo rate and confidence; every number recalculates on the spot.</p></a>
+        <a class="feature" href="/app#/forecast"><span class="tag">02</span><h4>Forecast</h4><p>Actual vs predicted flows, calibrated bands and a drift test that trips the alarm.</p></a>
+        <a class="feature" href="/app#/ladder"><span class="tag">03</span><h4>Funding Ladder</h4><p>Every way to raise cash, ranked by total cost, with the break-even clock.</p></a>
+        <a class="feature" href="/app#/nightlock"><span class="tag">04</span><h4>Night-Lock</h4><p>How much to sweep at 17:00, and how often the model's overnight calls held up.</p></a>
+        <a class="feature" href="/app#/allocation"><span class="tag">05</span><h4>Allocation</h4><p>Optimizer targets, the limits that decided them and why the reserve moved.</p></a>
+        <a class="feature" href="/app#/stress"><span class="tag">06</span><h4>Stress Lab</h4><p>What-if shocks, the smallest shock that breaks the plan, and wrong-way risk.</p></a>
+        <a class="feature" href="/app#/backtest"><span class="tag">07</span><h4>Backtest</h4><p>Four policies on identical data, against a perfect-hindsight ceiling.</p></a>
+        <a class="feature" href="/app#/replay"><span class="tag">08</span><h4>Replay</h4><p>The whole year at up to 500 hours a second, alerts and all.</p></a>
+        <a class="feature" href="/app#/trust"><span class="tag">09</span><h4>Trust</h4><p>Data checks, honesty report, policy as code, approvals, accounts and a tamper-proof audit log.</p></a>
+        <a class="feature" href="/app#/data"><span class="tag">10 · NEW</span><h4>Data Sources</h4><p>Upload your own CSV, map its columns, and stream live hourly rows through the API.</p></a>
+      </div>
+    </section>
+
+    <section class="block split" id="assistant" style="padding-top:24px">
+      <div>
+        <span class="kicker">Built-in assistant</span>
+        <h2 class="h-lg">Ask it like a colleague</h2>
+        <p class="sub">The assistant runs on this machine with no API key. It understands dates, amounts, durations and shock sizes, runs the real engines, and cites the decision it logged. Try a question here.</p>
+      </div>
+      <div class="try">
+        <div class="bar"><span>Treasury assistant</span><span class="mono" style="font-size:12px">runs locally</span></div>
+        <form id="tryForm"><input id="tryInput" aria-label="Question for the assistant" placeholder="Can we survive 3x withdrawals for 48 hours?" autocomplete="off"><button class="btn primary" type="submit">Ask</button></form>
+        <div class="answer" id="tryAnswer"><span class="dim">Answers appear here.</span></div>
+        <div class="chipsrow" id="tryChips"></div>
+      </div>
+    </section>
+
+    <section class="honest" aria-label="About the data">
+      <p><strong>Decision support, not autopilot.</strong> It recommends, logs and routes approvals; it never moves money by itself. The bundled demo year shows signs of being generated, so its results hold for that file; upload your own data for real numbers. Starting balances and the overdraft limit are assumptions, and every figure is labelled observed, modeled or assumed.</p>
+      <a href="/app#/trust">Read the honesty report →</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap"><span>RESERVE JUGGLER AI · HACKFORGE 2026</span><span><a href="/app#/overview">Dashboard</a> · <a href="/app#/data">Your data</a> · <a href="/app#/trust">Audit</a></span></div>
+  </footer>
+
+  <script src="landing.js?v=1"></script>
+</body>
+</html>
